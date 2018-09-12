@@ -4,6 +4,7 @@ var express = require('express');
 var customerController = require('./controllers/customer');
 var imageController = require('./controllers/image');
 var myinterestController = require('./controllers/myInterest');
+var eventController = require('./controllers/events');
 const routes = express();
 
 /**routes for customers*/
@@ -34,5 +35,11 @@ routes.post('/createInterest', myinterestController.createInterest);
 
 //get interest
 routes.get('/getInterest/:userId', myinterestController.getInterest);
+
+//create event
+routes.post('/createEvent', eventController.createEvent);
+
+//get all events
+routes.get('/getAllEvents', eventController.getAllEvents);
 
 module.exports = routes;
