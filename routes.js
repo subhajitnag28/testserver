@@ -10,18 +10,15 @@ const routes = express();
 /**routes for customers*/
 
 //register
-
 routes.post('/customerSignup', customerController.customerSignup);
 
 //login
-
 routes.post('/customerLogin', customerController.customerLogin);
 
 //update customer
 routes.post('/updateCustomer', customerController.updateCustomer);
 
 //getCustomerById
-
 routes.get('/getCustomerById/:id', customerController.getCustomerById);
 
 //get all customer
@@ -35,6 +32,9 @@ routes.post('/createInterest', myinterestController.createInterest);
 
 //get interest
 routes.get('/getInterest/:userId', myinterestController.getInterest);
+
+//update interest
+routes.post('/updateInterest', myinterestController.updateInterest);
 
 //create event
 routes.post('/createEvent', eventController.createEvent);

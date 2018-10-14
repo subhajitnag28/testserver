@@ -78,4 +78,64 @@ myinterestController.getInterest = (req, res) => {
     }
 }
 
+myinterestController.updateInterest = (req, res) => {
+    const requestBody = req.body;
+    if (requestBody._id) {
+        var collection = db.get().collection('interest');
+        collection.find({
+            userId: requestBody._id
+        }).toArray(function (err, success) {
+            if (err) {
+                res.status(500).json({
+                    success: false,
+                    data: err
+                });
+            } else {
+                if (success.length > 0) {
+
+                    collection.update({
+                        _id: requestBody._id
+                    }, {
+                            $set: requestBody
+                        }, {
+                            upsert: true
+                        },
+                        function (err2, res2) {
+                            if (err2) {
+                                res.status(500).json({
+                                    success: false,
+                                    data: {
+                                        message: err2
+                                    }
+                                })
+                            } else {
+                                res.status(200).json({
+                                    success: true,
+                                    data: {
+                                        message: "Interest updated successfully."
+                                    }
+                                })
+                            }
+                        });
+
+
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        data: {
+                            message: "User not found."
+                        }
+                    })
+                }
+            }
+        })
+    } else {
+        res.status(403).json({
+            success: false,
+            data: "user id is required."
+        });
+    }
+}
+
+
 module.exports = myinterestController;
