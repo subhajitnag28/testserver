@@ -80,10 +80,10 @@ myinterestController.getInterest = (req, res) => {
 
 myinterestController.updateInterest = (req, res) => {
     const requestBody = req.body;
-    if (requestBody._id) {
+    if (requestBody.userId) {
         var collection = db.get().collection('interest');
         collection.find({
-            userId: requestBody._id
+            userId: requestBody.userId
         }).toArray(function (err, success) {
             if (err) {
                 res.status(500).json({
@@ -92,9 +92,8 @@ myinterestController.updateInterest = (req, res) => {
                 });
             } else {
                 if (success.length > 0) {
-
                     collection.update({
-                        _id: requestBody._id
+                        userId: requestBody.userId
                     }, {
                             $set: requestBody
                         }, {
@@ -117,8 +116,6 @@ myinterestController.updateInterest = (req, res) => {
                                 })
                             }
                         });
-
-
                 } else {
                     res.status(404).json({
                         success: false,
