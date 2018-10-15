@@ -21,7 +21,93 @@ var storage = multer.diskStorage({
     }
 });
 
-//create event
+//event image saved
+eventController.eventImageSaved = (req, res) => {
+    var collection = db.get().collection('eventImage');
+    var image;
+
+    var upload = multer({
+        storage: storage,
+        fileFilter: function (req, file, cb) {
+            var ext = path.extname(file.originalname);
+            if (ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
+                return cb('not support', null)
+            }
+            cb(null, true)
+        }
+    }).single('file');
+
+    upload(req, res, function (error) {
+        userId = req.body.userId;
+
+        if (error) {
+            res.status(500).json({
+                success: false,
+                data: {
+                    message: error
+                }
+            });
+        }
+        else if (req.file) {
+            image = req.file;
+
+            if (image) {
+                const data = {
+                    image: image.filename
+                };
+
+                collection.save(data, function (err, success) {
+                    if (err) {
+                        res.status(500).json({
+                            success: false,
+                            data: err
+                        });
+                    } else {
+                        res.status(200).json({
+                            success: true,
+                            image: success.ops,
+                            message: "Event Image saved successfully."
+                        });
+                    }
+                });
+            }
+        }
+    });
+}
+
+// create event
+eventController.createEvent = (req, res) => {
+    const requestBody = req.body;
+    if (requestBody.image && requestBody.userId && requestBody.eventDate
+        && requestBody.eventName && requestBody.time && requestBody.location
+        && requestBody.price && requestBody.age && requestBody.about && requestBody.eventType) {
+        var collection = db.get().collection('event');
+
+        collection.save(requestBody, function (err, success) {
+            if (err) {
+                res.status(500).json({
+                    success: false,
+                    data: err
+                });
+            } else {
+                res.status(200).json({
+                    success: true,
+                    message: "Event created successfully"
+                });
+            }
+        });
+
+    } else {
+        res.status(403).json({
+            success: false,
+            data: {
+                message: "All fields are required."
+            }
+        })
+    }
+}
+
+/** create event
 eventController.createEvent = (req, res) => {
     var collection = db.get().collection('event');
 
@@ -127,6 +213,8 @@ eventController.createEvent = (req, res) => {
         }
     });
 }
+
+*/
 
 //get all event
 eventController.getAllEvents = (req, res) => {

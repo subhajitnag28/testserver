@@ -39,6 +39,8 @@ routes.post('/updateInterest', myinterestController.updateInterest);
 //create event
 routes.post('/createEvent', eventController.createEvent);
 
+routes.post('/eventImageSaved', eventController.eventImageSaved);
+
 //get all events
 routes.get('/getAllEvents', eventController.getAllEvents);
 
