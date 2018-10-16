@@ -65,7 +65,7 @@ eventController.eventImageSaved = (req, res) => {
                     } else {
                         res.status(200).json({
                             success: true,
-                            image: success.ops,
+                            image: success.ops[0].image,
                             message: "Event Image saved successfully."
                         });
                     }
