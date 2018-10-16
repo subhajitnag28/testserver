@@ -78,9 +78,9 @@ eventController.eventImageSaved = (req, res) => {
 // create event
 eventController.createEvent = (req, res) => {
     const requestBody = req.body;
-    if (requestBody.image && requestBody.userId && requestBody.eventDate
-        && requestBody.eventName && requestBody.time && requestBody.location
-        && requestBody.price && requestBody.age && requestBody.about && requestBody.eventType) {
+    if (requestBody.image || requestBody.userId || requestBody.eventDate
+        || requestBody.eventName || requestBody.time || requestBody.location
+        || requestBody.price || requestBody.age || requestBody.about || requestBody.eventType) {
         var collection = db.get().collection('event');
 
         collection.save(requestBody, function (err, success) {
