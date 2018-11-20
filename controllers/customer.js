@@ -159,7 +159,6 @@ customerController.getAllCustomers = (req, res) => {
 }
 
 customerController.getCustomerById = (req, res) => {
-
     const requestBody = req.param('id');
     if (requestBody) {
         var collection = db.get().collection('customer');

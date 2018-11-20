@@ -23,6 +23,7 @@ var router = express.Router();
 app.use(express.static('public'));
 app.use('/image', express.static(__dirname + '/uploadUserImage'));
 app.use('/eventImage', express.static(__dirname + '/eventsImage'));
+app.use('/skillShareImage', express.static(__dirname + '/skillShareImage'));
 app.use('/api', routes);
 app.listen(port);
 console.log('Listening on port ' + port);
