@@ -3,6 +3,7 @@ var express = require('express'),
 
 var db = require('../db')
 var multer = require('multer');
+var skillShareImage = multer({ dest: 'skillShareImage/' });
 var fs = require('fs');
 var path = require('path');
 
@@ -37,8 +38,7 @@ skillShareController.skillShareImageSaved = (req, res) => {
     }).single('file');
 
     upload(req, res, function (error) {
-        userId = req.body.userId;
-
+        console.log(req)
         if (error) {
             res.status(500).json({
                 success: false,

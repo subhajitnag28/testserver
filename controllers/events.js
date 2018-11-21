@@ -3,7 +3,7 @@ var express = require('express'),
 
 var db = require('../db')
 var multer = require('multer');
-var uploadUserImage = multer({ dest: 'eventsImage/' });
+var eventsImage = multer({ dest: 'eventsImage/' });
 var fs = require('fs');
 var path = require('path');
 
