@@ -22,7 +22,7 @@ var storage = multer.diskStorage({
 
 //event image saved
 skillShareController.skillShareImageSaved = (req, res) => {
-    var collection = db.get().collection('skillShare');
+    var collection = db.get().collection('skillShareImage');
     var image;
 
     var upload = multer({
