@@ -43,7 +43,6 @@ function getPasswordFromHash(saltKey, userpassword) {
 
 customerController.customerSignup = (req, res) => {
     const requestBody = req.body;
-    console.log(requestBody);
     if (requestBody.username && requestBody.email && requestBody.phone && requestBody.password) {
         var collection = db.get().collection('customer');
         collection.find({
@@ -99,7 +98,7 @@ customerController.customerSignup = (req, res) => {
             data: {
                 message: "Username, Email, Phone, and Password are required."
             }
-        })
+        });
     }
 }
 

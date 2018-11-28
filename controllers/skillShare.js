@@ -77,23 +77,58 @@ skillShareController.skillShareImageSaved = (req, res) => {
 // create event
 skillShareController.createSkillShare = (req, res) => {
     const requestBody = req.body;
-    if (requestBody.image || requestBody.userId || requestBody.username || requestBody.description) {
+    if (requestBody.image ||
+        requestBody.userId ||
+        requestBody.category ||
+        requestBody.title ||
+        requestBody.type
+    ) {
         var collection = db.get().collection('skillShare');
+        var customer = db.get().collection('customer');
 
-        collection.save(requestBody, function (err, success) {
+        let user_id = ObjectId(requestBody.userId);
+        delete requestBody.userId;
+        requestBody.userId = user_id;
+        requestBody.time = new Date();
+
+        customer.find({ _id: requestBody.userId }).toArray(function (err, result) {
             if (err) {
                 res.status(500).json({
                     success: false,
-                    data: err
+                    data: {
+                        message: err
+                    }
                 });
             } else {
-                res.status(200).json({
-                    success: true,
-                    message: "Skill share created successfully"
-                });
+                if (result.length != 0) {
+                    const userDetails = result[0];
+                    requestBody.userName = userDetails.username;
+                    requestBody.email = userDetails.email;
+                    requestBody.phone = userDetails.phone;
+
+                    collection.save(requestBody, function (err, success) {
+                        if (err) {
+                            res.status(500).json({
+                                success: false,
+                                data: err
+                            });
+                        } else {
+                            res.status(200).json({
+                                success: true,
+                                message: "Skill share created successfully"
+                            });
+                        }
+                    });
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        data: {
+                            message: "User not found."
+                        }
+                    });
+                }
             }
         });
-
     } else {
         res.status(403).json({
             success: false,
