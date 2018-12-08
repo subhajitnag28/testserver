@@ -6,6 +6,7 @@ var imageController = require('./controllers/image');
 var myinterestController = require('./controllers/myInterest');
 var eventController = require('./controllers/events');
 var skillShareController = require('./controllers/skillShare');
+var requestController = require('./controllers/request');
 const routes = express();
 
 /**routes for customers*/
@@ -52,5 +53,20 @@ routes.post('/skillShareImageSaved', skillShareController.skillShareImageSaved);
 
 //get all skill share
 routes.get('/getAllSkillShare', skillShareController.getAllSkillShare);
+
+//send request
+routes.post('/sendRequest', requestController.sendRequest);
+
+//accept request
+routes.post('/acceptRequest', requestController.acceptRequest);
+
+//cancel request
+routes.post('/cancelRequest', requestController.cancelRequest);
+
+//request status of from user
+routes.post('/requestStatusOfFromUser', requestController.requestStatusOfFromUser);
+
+//request status of to user
+routes.post('/requestStatusOfToUser', requestController.requestStatusOfToUser);
 
 module.exports = routes;
