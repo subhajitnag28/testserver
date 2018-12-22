@@ -8,7 +8,7 @@ const ObjectId = require('mongodb').ObjectID;
 
 requestController.sendRequest = (req, res) => {
     const requestBody = req.body;
-    if (requestBody.fromUser && requestBody.toUser) {
+    if (requestBody.fromUser && requestBody.toUser && requestBody.fromUserName && requestBody.toUSerName) {
         var Request = db.get().collection('request');
         Request.find({
             toUser: ObjectId(requestBody.toUser)
@@ -24,6 +24,8 @@ requestController.sendRequest = (req, res) => {
                 const data = {
                     fromUser: ObjectId(requestBody.fromUser),
                     toUser: ObjectId(requestBody.toUser),
+                    fromUserName: requestBody.fromUserName,
+                    toUSerName: requestBody.toUSerName,
                     requestSend_fromUser: true,
                     requestAccept: false,
                     isRequestCancel: false
@@ -50,7 +52,7 @@ requestController.sendRequest = (req, res) => {
         res.status(403).json({
             success: false,
             data: {
-                message: "From user Id and to user Id are required."
+                message: "From user Id,to user Id, fromUserName, toUSerName are required."
             }
         });
     }

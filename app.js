@@ -17,7 +17,7 @@ db.connect('mongodb://test:password1@ds237932.mlab.com:37932/ionic_test', functi
     } else {
         console.log("connect to mongodb");
     }
-})
+});
 var router = express.Router();
 
 app.use(express.static('public'));
@@ -26,4 +26,5 @@ app.use('/eventImage', express.static(__dirname + '/eventsImage'));
 app.use('/skillShareImage', express.static(__dirname + '/skillShareImage'));
 app.use('/api', routes);
 app.listen(port);
+
 console.log('Listening on port ' + port);
