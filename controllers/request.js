@@ -192,10 +192,10 @@ requestController.cancelRequest = (req, res) => {
 
 requestController.requestStatusOfFromUser = (req, res) => {
     const requestBody = req.body;
-    if (requestBody.id) {
+    if (requestBody.fromUser) {
         var Request = db.get().collection('request');
         Request.find({
-            fromUser: ObjectId(requestBody.id)
+            fromUser: ObjectId(requestBody.fromUser)
         }).toArray(function (err, docs) {
             if (err) {
                 res.status(500).json({
@@ -208,7 +208,7 @@ requestController.requestStatusOfFromUser = (req, res) => {
                         success: true,
                         data: {
                             message: "Request status.",
-                            details: docs[0]
+                            details: docs
                         }
                     });
                 } else {
@@ -225,7 +225,7 @@ requestController.requestStatusOfFromUser = (req, res) => {
         res.status(403).json({
             success: false,
             data: {
-                message: "From user Id and User Id are required."
+                message: "From user Id is required."
             }
         });
     }
@@ -233,10 +233,10 @@ requestController.requestStatusOfFromUser = (req, res) => {
 
 requestController.requestStatusOfToUser = (req, res) => {
     const requestBody = req.body;
-    if (requestBody.id) {
+    if (requestBody.toUser) {
         var Request = db.get().collection('request');
         Request.find({
-            toUser: ObjectId(requestBody.id)
+            toUser: ObjectId(requestBody.toUser)
         }).toArray(function (err, docs) {
             if (err) {
                 res.status(500).json({
@@ -249,7 +249,7 @@ requestController.requestStatusOfToUser = (req, res) => {
                         success: true,
                         data: {
                             message: "Request status.",
-                            details: docs[0]
+                            details: docs
                         }
                     });
                 } else {
@@ -266,7 +266,7 @@ requestController.requestStatusOfToUser = (req, res) => {
         res.status(403).json({
             success: false,
             data: {
-                message: "From user Id and User Id are required."
+                message: "User Id is required."
             }
         });
     }
