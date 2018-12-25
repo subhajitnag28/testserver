@@ -148,13 +148,51 @@ customerController.customerLogin = (req, res) => {
 }
 
 customerController.getAllCustomers = (req, res) => {
-    var collection = db.get().collection('customer');
-    collection.find().toArray(function (err, docs) {
-        res.status(200).json({
-            success: true,
-            data: docs
-        });
-    })
+    const requestBody = req.body;
+    let allCustomers = [];
+    if (requestBody) {
+        var collection = db.get().collection('customer');
+        collection.find().toArray(function (err, success) {
+            if (err) {
+                res.status(500).json({
+                    success: false,
+                    data: err
+                });
+            } else {
+                if (success.length > 0) {
+                    console.log(requestBody)
+                    let userDetails = success;
+                    userDetails.map((res1) => {
+                        if (res1._id != requestBody.userId) {
+                            allCustomers.push(res1);
+                        }
+                    });
+                    if (allCustomers.length != 0) {
+                        res.status(200).json({
+                            success: true,
+                            data: {
+                                userDetails: allCustomers
+                            }
+                        })
+                    }
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        data: {
+                            message: "Users not found."
+                        }
+                    });
+                }
+            }
+        })
+    } else {
+        res.status(403).json({
+            success: false,
+            data: {
+                message: "User Id is required."
+            }
+        })
+    }
 }
 
 customerController.getCustomerById = (req, res) => {

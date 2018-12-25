@@ -24,7 +24,7 @@ routes.post('/updateCustomer', customerController.updateCustomer);
 routes.get('/getCustomerById/:id', customerController.getCustomerById);
 
 //get all customer
-routes.get('/getAllCustomers', customerController.getAllCustomers);
+routes.post('/getAllCustomers', customerController.getAllCustomers);
 
 // user image upload
 routes.post('/uploadImage', imageController.uploadImage);
