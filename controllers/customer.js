@@ -160,7 +160,6 @@ customerController.getAllCustomers = (req, res) => {
                 });
             } else {
                 if (success.length > 0) {
-                    console.log(requestBody)
                     let userDetails = success;
                     userDetails.map((res1) => {
                         if (res1._id != requestBody.userId) {
