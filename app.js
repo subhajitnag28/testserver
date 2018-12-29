@@ -30,7 +30,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 io.on('connection', function (socket) {
-    if (socket.request._query['userId'] != 'null' && socket.request._query['userId'] != undefined) {
+    if (socket.request._query['userId'] != 'null' && socket.request._query['userId'] != 'undefined') {
         let userId = socket.request._query['userId'];
         let userSocketId = socket.id;
         if (userId && userSocketId) {
@@ -61,6 +61,104 @@ io.on('connection', function (socket) {
             });
         }
     }
+
+    /** 
+     * get user chat messages
+     */
+    socket.on('chat-list', (data) => {
+        let chatListResponse = {};
+
+        if (data.userId == '' || data.userId == 'null' || data.userId == 'undefined') {
+            chatListResponse.error = true;
+            chatListResponse.message = `User does not found.`;
+
+            socket.emit('chat-list-response', chatListResponse);
+        } else {
+            // helper.getUserInfo(data.userId, (err, UserInfoResponse) => {
+
+            //     delete UserInfoResponse.password;
+
+            //     helper.getChatList(socket.id, UserInfoResponse, (err, response) => {
+
+            //         this.io.to(socket.id).emit('chat-list-response', {
+            //             error: false,
+            //             singleUser: false,
+            //             chatList: response
+            //         });
+            //     });
+            // });
+        }
+    });
+
+    /**
+     * send message to user
+     */
+    socket.on('add-message', (data) => {
+        console.log("data :", data);
+        if (data.message === '') {
+            socket.to(socket.id).emit(`add-message-response`, `Message cant be empty`);
+        } else if (data.fromUserId === '') {
+            socket.to(socket.id).emit(`add-message-response`, `Unexpected error, Login again.`);
+        } else if (data.toUserId === '') {
+            socket.to(socket.id).emit(`add-message-response`, `Select a user to chat.`);
+        } else {
+            let toSocketId;
+            let fromSocketId;
+            data.timestamp = Math.floor(new Date() / 1000);
+
+            var collection = db.get().collection('customer');
+
+            // to user details get
+            collection.find({
+                _id: ObjectId(data.toUserId)
+            }).toArray(function (err, success) {
+                if (err) {
+                    console.log('user information can not found');
+                } else {
+                    if (success.length != 0) {
+                        console.log('to user details found :', success);
+
+                        //from user details get
+                        collection.find({
+                            _id: ObjectId(data.fromUserId)
+                        }).toArray(function (err1, success1) {
+                            if (err) {
+                                console.log('user information can not found');
+                            } else {
+                                if (success1.length != 0) {
+                                    console.log('from user details found :', success1);
+
+
+                                } else {
+                                    console.log('user not found');
+                                }
+                            }
+                        });
+                    } else {
+                        console.log('user not found');
+                    }
+                }
+            });
+
+            // helper.getUserInfo(data.toUserId, (err, Response) => {
+            //     console.log("1" + Response.socketId);
+            //     data.toSocketId = Response.socketId
+            //     toSocketId = data.toSocketId;
+            //     helper.getUserInfo(data.fromUserId, (err, Response) => {
+            //         console.log("2" + Response.socketId);
+            //         data.fromSocketId = Response.socketId
+            //         fromSocketId = data.fromSocketId;
+            //         delete data.toSocketId;
+            //         helper.insertMessages(data, (error, response) => {
+            //             console.log("tosocketId" + toSocketId)
+            //             console.log(data);
+            //             this.io.to(toSocketId).emit(`add-message-response`, data);
+            //         });
+            //     });
+            // });
+        }
+    });
+
 });
 
 app.use(express.static('public'));
