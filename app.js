@@ -30,10 +30,48 @@ const io = socketIo(server);
 
 io.on('connection', function (socket) {
     if (socket.request._query['userId'] != 'null' && socket.request._query['userId'] != undefined) {
-        let userID = socket.request._query['userId'];
+        let userId = socket.request._query['userId'];
         let userSocketId = socket.id;
-        console.log("userID :", userID);
-        console.log("userSocketId :", userSocketId);
+        if (userId && userSocketId) {
+            var collection = db.get().collection('customer');
+            collection.find({
+                _id: ObjectId(userId)
+            }).toArray(function (err, success) {
+                if (err) {
+                    res.status(500).json({
+                        success: false,
+                        data: err
+                    });
+                } else {
+                    if (success.length != 0) {
+                        collection.update({
+                            _id: ObjectId(userId)
+                        }, {
+                                $set: { socketId: userSocketId }
+                            }, {
+                                upsert: true
+                            },
+                            function (err2, res2) {
+                                if (err2) {
+                                    res.status(500).json({
+                                        success: false,
+                                        data: {
+                                            message: err2
+                                        }
+                                    })
+                                } else {
+                                    res.status(200).json({
+                                        success: true,
+                                        data: {
+                                            message: "Socket id updated successfully."
+                                        }
+                                    });
+                                }
+                            });
+                    }
+                }
+            });
+        }
     }
 });
 
