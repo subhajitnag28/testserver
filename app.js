@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require("http");
 const socketIo = require("socket.io");
+const ObjectId = require('mongodb').ObjectID;
 
 const port = process.env.PORT || 7000;
 
@@ -38,10 +39,7 @@ io.on('connection', function (socket) {
                 _id: ObjectId(userId)
             }).toArray(function (err, success) {
                 if (err) {
-                    res.status(500).json({
-                        success: false,
-                        data: err
-                    });
+                    console.log('socket id update failed');
                 } else {
                     if (success.length != 0) {
                         collection.update({
@@ -53,19 +51,9 @@ io.on('connection', function (socket) {
                             },
                             function (err2, res2) {
                                 if (err2) {
-                                    res.status(500).json({
-                                        success: false,
-                                        data: {
-                                            message: err2
-                                        }
-                                    })
+                                    console.log('socket id update failed');
                                 } else {
-                                    res.status(200).json({
-                                        success: true,
-                                        data: {
-                                            message: "Socket id updated successfully."
-                                        }
-                                    });
+                                    console.log('Socket id updated successfully.');
                                 }
                             });
                     }
