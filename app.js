@@ -29,7 +29,7 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 io.on('connection', function (socket) {
-    if (socket.request._query['userId'] != 'null') {
+    if (socket.request._query['userId'] != 'null' && socket.request._query['userId'] != undefined) {
         let userID = socket.request._query['userId'];
         let userSocketId = socket.id;
         console.log("userID :", userID);
