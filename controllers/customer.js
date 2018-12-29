@@ -235,8 +235,6 @@ customerController.getCustomerById = (req, res) => {
     }
 }
 
-
-
 customerController.updateCustomer = (req, res) => {
     const requestBody = req.body;
     if (requestBody._id) {

@@ -29,9 +29,13 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 io.on('connection', function (socket) {
-    console.log("socket connected :", socket.id);
+    if (socket.request._query['userId'] != 'null') {
+        let userID = socket.request._query['userId'];
+        let userSocketId = socket.id;
+        console.log("userID :", userID);
+        console.log("userSocketId :", userSocketId);
+    }
 });
-
 
 app.use(express.static('public'));
 app.use('/image', express.static(__dirname + '/uploadUserImage'));
