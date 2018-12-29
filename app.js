@@ -33,6 +33,9 @@ io.on('connection', function (socket) {
     if (socket.request._query['userId'] != 'null' && socket.request._query['userId'] != 'undefined') {
         let userId = socket.request._query['userId'];
         let userSocketId = socket.id;
+
+        console.log("userId :", userId);
+        console.log("userSocketId :", userSocketId);
         if (userId && userSocketId) {
             var collection = db.get().collection('customer');
             collection.find({
