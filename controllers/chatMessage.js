@@ -20,13 +20,12 @@ messageController.getMessages = (req, res) => {
                 });
             } else {
                 if (success.length != 0) {
-                    console.log(success);
-                    // res.status(200).json({
-                    //     success: true,
-                    //     data: {
-                    //         chat_messages: success
-                    //     }
-                    // });
+                    res.status(200).json({
+                        success: true,
+                        data: {
+                            chat_messages: success
+                        }
+                    });
                 } else {
                     res.status(404).json({
                         success: false,
