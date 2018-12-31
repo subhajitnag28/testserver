@@ -94,7 +94,6 @@ io.on('connection', function (socket) {
      * send message to user
      */
     socket.on('add-message', (data) => {
-        console.log("data :", data);
         if (data.message === '') {
             socket.to(socket.id).emit(`add-message-response`, `Message cant be empty`);
         } else if (data.fromUserId === '') {
@@ -103,10 +102,10 @@ io.on('connection', function (socket) {
             socket.to(socket.id).emit(`add-message-response`, `Select a user to chat.`);
         } else {
             let toSocketId;
-            let fromSocketId;
             data.timestamp = Math.floor(new Date() / 1000);
 
             var collection = db.get().collection('customer');
+            var chatMessage = db.get().collection('chat_message');
 
             // to user details get
             collection.find({
@@ -120,7 +119,13 @@ io.on('connection', function (socket) {
                         console.log('toSocketId :', toSocketId);
 
                         console.log("data :", data);
-                        socket.to(toSocketId).emit(`add-message-response`, data);
+                        chatMessage.save(data, function (error, message) {
+                            if (error) {
+                                console.log('chat not saved');
+                            } else {
+                                socket.to(toSocketId).emit(`add-message-response`, data);
+                            }
+                        });
 
                         //from user details get
                         // collection.find({
