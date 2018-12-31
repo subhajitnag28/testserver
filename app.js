@@ -116,9 +116,6 @@ io.on('connection', function (socket) {
                 } else {
                     if (success.length != 0) {
                         toSocketId = success[0].socketId;
-                        console.log('toSocketId :', toSocketId);
-
-                        console.log("data :", data);
                         chatMessage.save(data, function (error, message) {
                             if (error) {
                                 console.log('chat not saved');
@@ -126,46 +123,11 @@ io.on('connection', function (socket) {
                                 socket.to(toSocketId).emit(`add-message-response`, data);
                             }
                         });
-
-                        //from user details get
-                        // collection.find({
-                        //     _id: ObjectId(data.fromUserId)
-                        // }).toArray(function (err1, success1) {
-                        //     if (err) {
-                        //         console.log('user information can not found');
-                        //     } else {
-                        //         if (success1.length != 0) {
-                        //             fromSocketId = success1[0].socketId;
-                        //             console.log('fromSocketId :', fromSocketId);
-
-
-                        //         } else {
-                        //             console.log('user not found');
-                        //         }
-                        //     }
-                        // });
                     } else {
                         console.log('user not found');
                     }
                 }
             });
-
-            // helper.getUserInfo(data.toUserId, (err, Response) => {
-            //     console.log("1" + Response.socketId);
-            //     data.toSocketId = Response.socketId
-            //     toSocketId = data.toSocketId;
-            //     helper.getUserInfo(data.fromUserId, (err, Response) => {
-            //         console.log("2" + Response.socketId);
-            //         data.fromSocketId = Response.socketId
-            //         fromSocketId = data.fromSocketId;
-            //         delete data.toSocketId;
-            //         helper.insertMessages(data, (error, response) => {
-            //             console.log("tosocketId" + toSocketId)
-            //             console.log(data);
-            //             this.io.to(toSocketId).emit(`add-message-response`, data);
-            //         });
-            //     });
-            // });
         }
     });
 
