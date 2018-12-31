@@ -33,9 +33,6 @@ io.on('connection', function (socket) {
     if (socket.request._query['userId'] != 'null' && socket.request._query['userId'] != 'undefined') {
         let userId = socket.request._query['userId'];
         let userSocketId = socket.id;
-
-        console.log("userId :", userId);
-        console.log("userSocketId :", userSocketId);
         if (userId && userSocketId) {
             var collection = db.get().collection('customer');
             collection.find({
@@ -119,24 +116,29 @@ io.on('connection', function (socket) {
                     console.log('user information can not found');
                 } else {
                     if (success.length != 0) {
-                        console.log('to user details found :', success);
+                        toSocketId = success[0].socketId;
+                        console.log('toSocketId :', toSocketId);
+
+                        console.log("data :", data);
+                        socket.to(toSocketId).emit(`add-message-response`, data);
 
                         //from user details get
-                        collection.find({
-                            _id: ObjectId(data.fromUserId)
-                        }).toArray(function (err1, success1) {
-                            if (err) {
-                                console.log('user information can not found');
-                            } else {
-                                if (success1.length != 0) {
-                                    console.log('from user details found :', success1);
+                        // collection.find({
+                        //     _id: ObjectId(data.fromUserId)
+                        // }).toArray(function (err1, success1) {
+                        //     if (err) {
+                        //         console.log('user information can not found');
+                        //     } else {
+                        //         if (success1.length != 0) {
+                        //             fromSocketId = success1[0].socketId;
+                        //             console.log('fromSocketId :', fromSocketId);
 
 
-                                } else {
-                                    console.log('user not found');
-                                }
-                            }
-                        });
+                        //         } else {
+                        //             console.log('user not found');
+                        //         }
+                        //     }
+                        // });
                     } else {
                         console.log('user not found');
                     }
