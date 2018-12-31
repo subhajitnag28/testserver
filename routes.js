@@ -7,6 +7,7 @@ var myinterestController = require('./controllers/myInterest');
 var eventController = require('./controllers/events');
 var skillShareController = require('./controllers/skillShare');
 var requestController = require('./controllers/request');
+var messageController = require('./controllers/chatMessage');
 const routes = express();
 
 /**routes for customers*/
@@ -68,5 +69,8 @@ routes.post('/requestStatusOfFromUser', requestController.requestStatusOfFromUse
 
 //request status of to user
 routes.post('/requestStatusOfToUser', requestController.requestStatusOfToUser);
+
+//get chat messages
+routes.post('/getMessages', messageController.getMessages);
 
 module.exports = routes;

@@ -62,34 +62,6 @@ io.on('connection', function (socket) {
         }
     }
 
-    /** 
-     * get user chat messages
-     */
-    socket.on('chat-list', (data) => {
-        let chatListResponse = {};
-
-        if (data.userId == '' || data.userId == 'null' || data.userId == 'undefined') {
-            chatListResponse.error = true;
-            chatListResponse.message = `User does not found.`;
-
-            socket.emit('chat-list-response', chatListResponse);
-        } else {
-            // helper.getUserInfo(data.userId, (err, UserInfoResponse) => {
-
-            //     delete UserInfoResponse.password;
-
-            //     helper.getChatList(socket.id, UserInfoResponse, (err, response) => {
-
-            //         this.io.to(socket.id).emit('chat-list-response', {
-            //             error: false,
-            //             singleUser: false,
-            //             chatList: response
-            //         });
-            //     });
-            // });
-        }
-    });
-
     /**
      * send message to user
      */
@@ -102,6 +74,8 @@ io.on('connection', function (socket) {
             socket.to(socket.id).emit(`add-message-response`, `Select a user to chat.`);
         } else {
             let toSocketId;
+            data.fromUserId = ObjectId(data.fromUserId);
+            data.toUserId = ObjectId(data.toUserId);
             data.timestamp = Math.floor(new Date() / 1000);
 
             var collection = db.get().collection('customer');
