@@ -9,10 +9,28 @@ messageController.getMessages = (req, res) => {
     const requestBody = req.body;
     if (requestBody) {
         var collection = db.get().collection('chat_message');
-        collection.find({
-            fromUserId: ObjectId(requestBody.fromUserId),
-            toUserId: ObjectId(requestBody.toUserId)
-        }).sort({ 'timestamp': 1 }).toArray(function (err, success) {
+        const data = {
+            '$or': [
+                {
+                    '$and': [
+                        {
+                            'toUserId': userId
+                        }, {
+                            'fromUserId': toUserId
+                        }
+                    ]
+                }, {
+                    '$and': [
+                        {
+                            'toUserId': toUserId
+                        }, {
+                            'fromUserId': userId
+                        }
+                    ]
+                },
+            ]
+        };
+        collection.find(data).sort({ 'timestamp': 1 }).toArray(function (err, success) {
             if (err) {
                 res.status(500).json({
                     success: false,
