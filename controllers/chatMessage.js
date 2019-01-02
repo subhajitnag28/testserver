@@ -45,6 +45,7 @@ messageController.getMessages = (req, res) => {
                         }
                     });
                 } else {
+                    console.log('err');
                     res.status(404).json({
                         success: false,
                         data: {
