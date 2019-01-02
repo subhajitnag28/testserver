@@ -14,17 +14,17 @@ messageController.getMessages = (req, res) => {
                 {
                     '$and': [
                         {
-                            'toUserId': userId
+                            'toUserId': requestBody.toUserId
                         }, {
-                            'fromUserId': toUserId
+                            'fromUserId': requestBody.fromUserId
                         }
                     ]
                 }, {
                     '$and': [
                         {
-                            'toUserId': toUserId
+                            'toUserId': requestBody.toUserId
                         }, {
-                            'fromUserId': userId
+                            'fromUserId': requestBody.fromUserId
                         }
                     ]
                 },
