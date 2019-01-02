@@ -14,9 +14,9 @@ messageController.getMessages = (req, res) => {
                 {
                     '$and': [
                         {
-                            'toUserId': requestBody.toUserId
+                            'toUserId': requestBody.fromUserId
                         }, {
-                            'fromUserId': requestBody.fromUserId
+                            'fromUserId': requestBody.toUserId
                         }
                     ]
                 }, {
