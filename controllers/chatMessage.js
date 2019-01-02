@@ -8,24 +8,23 @@ const ObjectId = require('mongodb').ObjectID;
 messageController.getMessages = (req, res) => {
     const requestBody = req.body;
     if (requestBody) {
-        console.log('requestBody :', requestBody);
         var collection = db.get().collection('chat_message');
         const value = {
             '$or': [
                 {
                     '$and': [
                         {
-                            'toUserId': requestBody.fromUserId
+                            toUserId: requestBody.fromUserId
                         }, {
-                            'fromUserId': requestBody.toUserId
+                            fromUserId: requestBody.toUserId
                         }
                     ]
                 }, {
                     '$and': [
                         {
-                            'toUserId': requestBody.toUserId
+                            toUserId: requestBody.toUserId
                         }, {
-                            'fromUserId': requestBody.fromUserId
+                            fromUserId: requestBody.fromUserId
                         }
                     ]
                 },
