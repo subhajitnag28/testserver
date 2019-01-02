@@ -9,37 +9,34 @@ messageController.getMessages = (req, res) => {
     const requestBody = req.body;
     if (requestBody) {
         var collection = db.get().collection('chat_message');
-        const value = {
+        const data = {
             '$or': [
                 {
                     '$and': [
                         {
-                            toUserId: requestBody.fromUserId
+                            'toUserId': ObjectId(requestBody.toUserId)
                         }, {
-                            fromUserId: requestBody.toUserId
+                            'fromUserId': ObjectId(requestBody.fromUserId)
                         }
                     ]
                 }, {
                     '$and': [
                         {
-                            toUserId: requestBody.toUserId
+                            'toUserId': ObjectId(requestBody.fromUserId)
                         }, {
-                            fromUserId: requestBody.fromUserId
+                            'fromUserId': ObjectId(requestBody.toUserId)
                         }
                     ]
                 },
             ]
         };
-
-        console.log('val :', value);
-        collection.find(value).sort({ 'timestamp': 1 }).toArray(function (err, success) {
+        collection.find(data).sort({ 'timestamp': 1 }).toArray(function (err, success) {
             if (err) {
                 res.status(500).json({
                     success: false,
                     data: err
                 });
             } else {
-                console.log('succ :', success);
                 if (success.length != 0) {
                     res.status(200).json({
                         success: true,
@@ -48,7 +45,6 @@ messageController.getMessages = (req, res) => {
                         }
                     });
                 } else {
-                    console.log('err');
                     res.status(404).json({
                         success: false,
                         data: {
