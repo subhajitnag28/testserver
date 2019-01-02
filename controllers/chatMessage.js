@@ -8,8 +8,9 @@ const ObjectId = require('mongodb').ObjectID;
 messageController.getMessages = (req, res) => {
     const requestBody = req.body;
     if (requestBody) {
+        console.log('requestBody :', requestBody);
         var collection = db.get().collection('chat_message');
-        const data = {
+        const value = {
             '$or': [
                 {
                     '$and': [
@@ -30,13 +31,16 @@ messageController.getMessages = (req, res) => {
                 },
             ]
         };
-        collection.find(data).sort({ 'timestamp': 1 }).toArray(function (err, success) {
+
+        console.log('val :', value);
+        collection.find(value).sort({ 'timestamp': 1 }).toArray(function (err, success) {
             if (err) {
                 res.status(500).json({
                     success: false,
                     data: err
                 });
             } else {
+                console.log('succ :', success);
                 if (success.length != 0) {
                     res.status(200).json({
                         success: true,
