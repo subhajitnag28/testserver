@@ -65,10 +65,10 @@ routes.post('/acceptRequest', requestController.acceptRequest);
 routes.post('/cancelRequest', requestController.cancelRequest);
 
 //request status of from user
-routes.post('/requestStatusOfFromUser', requestController.requestStatusOfFromUser);
+routes.get('/getAllRequest', requestController.getAllRequest);
 
 //request status of to user
-routes.post('/requestStatusOfToUser', requestController.requestStatusOfToUser);
+// routes.post('/requestStatusOfToUser', requestController.requestStatusOfToUser);
 
 //get chat messages
 routes.post('/getMessages', messageController.getMessages);

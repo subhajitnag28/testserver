@@ -1,49 +1,38 @@
 var express = require('express'),
-    router = express.Router()
-
-var db = require('../db')
-
+    router = express.Router();
+var db = require('../db');
 const requestController = {};
 const ObjectId = require('mongodb').ObjectID;
 
 requestController.sendRequest = (req, res) => {
     const requestBody = req.body;
-    if (requestBody.fromUser && requestBody.toUser && requestBody.fromUserName && requestBody.toUserName) {
+    if (requestBody.senderId &&
+        requestBody.receiverId &&
+        requestBody.senderName &&
+        requestBody.receiverName) {
         var Request = db.get().collection('request');
-        Request.find({
-            toUser: ObjectId(requestBody.toUser)
-        }).toArray(function (err, docs) {
-            if (docs.length > 0) {
-                res.status(403).json({
+
+        const value = {
+            senderId: ObjectId(requestBody.senderId),
+            receiverId: ObjectId(requestBody.receiverId),
+            request_time: new Date().getTime(),
+            friend: [],
+            request_send: [requestBody.receiverId],
+            pending_request: [requestBody.senderId],
+            isAccept: 0
+        };
+        Request.save(value, function (err, success) {
+            if (err) {
+                res.status(500).json({
                     success: false,
-                    data: {
-                        message: "Already request send."
-                    }
+                    data: err
                 });
             } else {
-                const data = {
-                    fromUser: ObjectId(requestBody.fromUser),
-                    toUser: ObjectId(requestBody.toUser),
-                    fromUserName: requestBody.fromUserName,
-                    toUserName: requestBody.toUserName,
-                    requestSend_fromUser: true,
-                    requestAccept: false,
-                    isRequestCancel: false
-                };
-                Request.save(data, function (err, success) {
-                    if (err) {
-                        res.status(500).json({
-                            success: false,
-                            data: err
-                        });
-                    } else {
-                        res.status(200).json({
-                            success: true,
-                            data: {
-                                message: "Request send.",
-                                details: success.ops[0]
-                            }
-                        });
+                res.status(200).json({
+                    success: true,
+                    data: {
+                        message: "Request send.",
+                        details: success.ops[0]
                     }
                 });
             }
@@ -52,7 +41,7 @@ requestController.sendRequest = (req, res) => {
         res.status(403).json({
             success: false,
             data: {
-                message: "From user Id,to user Id, fromUserName, toUserName are required."
+                message: "senderId, receiverId, senderName and receiverName are required."
             }
         });
     }
@@ -60,11 +49,11 @@ requestController.sendRequest = (req, res) => {
 
 requestController.acceptRequest = (req, res) => {
     const requestBody = req.body;
-    if (requestBody.fromUser && requestBody.user_id && requestBody._id) {
+    if (requestBody.senderId && requestBody.receiverId) {
         var Request = db.get().collection('request');
         Request.find({
-            fromUser: ObjectId(requestBody.fromUser),
-            toUser: ObjectId(requestBody.user_id)
+            senderId: ObjectId(requestBody.senderId),
+            receiverId: ObjectId(requestBody.receiverId)
         }).toArray(function (err, docs) {
             if (err) {
                 res.status(500).json({
@@ -75,14 +64,20 @@ requestController.acceptRequest = (req, res) => {
                 if (docs.length != 0) {
                     const data = {
                         _id: docs[0]._id,
-                        fromUser: docs[0].fromUser,
-                        toUser: docs[0].toUser,
-                        requestSend_fromUser: false,
-                        requestAccept: true,
-                        isRequestCancel: false
+                        senderId: docs[0].senderId,
+                        receiverId: docs[0].receiverId,
+                        request_time: docs[0].request_time,
+                        friend: [{
+                            senderId: docs[0].senderId,
+                            receiverId: docs[0].receiverId
+                        }],
+                        request_send: [],
+                        request_accept_time: new Date().getTime(),
+                        pending_request: [],
+                        isAccept: 1
                     };
                     Request.update({
-                        _id: ObjectId(requestBody._id)
+                        _id: docs[0]._id
                     }, {
                             $set: data
                         }, {
@@ -127,11 +122,11 @@ requestController.acceptRequest = (req, res) => {
 
 requestController.cancelRequest = (req, res) => {
     const requestBody = req.body;
-    if (requestBody.fromUser && requestBody.user_id && requestBody._id) {
+    if (requestBody.senderId && requestBody.receiverId) {
         var Request = db.get().collection('request');
         Request.find({
-            fromUser: ObjectId(requestBody.fromUser),
-            toUser: ObjectId(requestBody.user_id)
+            senderId: ObjectId(requestBody.senderId),
+            receiverId: ObjectId(requestBody.receiverId)
         }).toArray(function (err, docs) {
             if (err) {
                 res.status(500).json({
@@ -140,38 +135,25 @@ requestController.cancelRequest = (req, res) => {
                 });
             } else {
                 if (docs.length != 0) {
-                    const data = {
-                        _id: docs[0]._id,
-                        fromUser: docs[0].fromUser,
-                        toUser: docs[0].toUser,
-                        requestSend_fromUser: false,
-                        requestAccept: false,
-                        isRequestCancel: true
-                    };
-                    Request.update({
-                        _id: ObjectId(requestBody._id)
-                    }, {
-                            $set: data
-                        }, {
-                            upsert: true
-                        },
-                        function (err2, res2) {
-                            if (err2) {
-                                res.status(500).json({
-                                    success: false,
-                                    data: {
-                                        message: err2
-                                    }
-                                })
-                            } else {
-                                res.status(200).json({
-                                    success: true,
-                                    data: {
-                                        message: "Request cancel successfully."
-                                    }
-                                });
-                            }
-                        });
+                    Request.remove({
+                        _id: docs[0]._id
+                    }, function (err2, res2) {
+                        if (err2) {
+                            res.status(500).json({
+                                success: false,
+                                data: {
+                                    message: err2
+                                }
+                            })
+                        } else {
+                            res.status(200).json({
+                                success: true,
+                                data: {
+                                    message: "Request canceled successfully."
+                                }
+                            });
+                        }
+                    });
                 } else {
                     res.status(404).json({
                         success: false,
@@ -192,86 +174,34 @@ requestController.cancelRequest = (req, res) => {
     }
 }
 
-requestController.requestStatusOfFromUser = (req, res) => {
-    const requestBody = req.body;
-    if (requestBody.fromUser) {
-        var Request = db.get().collection('request');
-        Request.find({
-            fromUser: ObjectId(requestBody.fromUser)
-        }).toArray(function (err, docs) {
-            if (err) {
-                res.status(500).json({
-                    success: false,
-                    data: err
+requestController.getAllRequest = (req, res) => {
+    var Request = db.get().collection('request');
+    Request.find().toArray(function (err, docs) {
+        if (err) {
+            res.status(500).json({
+                success: false,
+                data: err
+            });
+        } else {
+            if (docs.length != 0) {
+                res.status(200).json({
+                    success: true,
+                    data: {
+                        message: "Request status.",
+                        details: docs
+                    }
                 });
             } else {
-                if (docs.length != 0) {
-                    res.status(200).json({
-                        success: true,
-                        data: {
-                            message: "Request status.",
-                            details: docs
-                        }
-                    });
-                } else {
-                    res.status(404).json({
-                        success: false,
-                        data: {
-                            message: "Request status not found."
-                        }
-                    });
-                }
-            }
-        });
-    } else {
-        res.status(403).json({
-            success: false,
-            data: {
-                message: "From user Id is required."
-            }
-        });
-    }
-}
-
-requestController.requestStatusOfToUser = (req, res) => {
-    const requestBody = req.body;
-    if (requestBody.toUser) {
-        var Request = db.get().collection('request');
-        Request.find({
-            toUser: ObjectId(requestBody.toUser)
-        }).toArray(function (err, docs) {
-            if (err) {
-                res.status(500).json({
-                    success: false,
-                    data: err
+                res.status(200).json({
+                    success: true,
+                    data: {
+                        message: "Request not found.",
+                        details: []
+                    }
                 });
-            } else {
-                if (docs.length != 0) {
-                    res.status(200).json({
-                        success: true,
-                        data: {
-                            message: "Request status.",
-                            details: docs
-                        }
-                    });
-                } else {
-                    res.status(404).json({
-                        success: false,
-                        data: {
-                            message: "Request status not found."
-                        }
-                    });
-                }
             }
-        });
-    } else {
-        res.status(403).json({
-            success: false,
-            data: {
-                message: "User Id is required."
-            }
-        });
-    }
+        }
+    });
 }
 
 module.exports = requestController;
