@@ -65,7 +65,7 @@ routes.post('/acceptRequest', requestController.acceptRequest);
 routes.post('/cancelRequest', requestController.cancelRequest);
 
 //request status of from user
-routes.get('/getAllRequest', requestController.getAllRequest);
+routes.get('/getRequest/:id', requestController.getRequest);
 
 //request status of to user
 // routes.post('/requestStatusOfToUser', requestController.requestStatusOfToUser);
