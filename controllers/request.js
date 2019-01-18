@@ -515,6 +515,8 @@ requestController.getRequest = (req, res) => {
     const userId = req.param('id');
     if (userId) {
         var Request = db.get().collection('request');
+        var customer = db.get().collection('customer');
+        var user_data = [];
         Request.find({
             userId: ObjectId(userId)
         }).toArray(function (err, docs) {
@@ -525,13 +527,35 @@ requestController.getRequest = (req, res) => {
                 });
             } else {
                 if (docs.length != 0) {
-                    res.status(200).json({
-                        success: true,
-                        data: {
-                            message: "User request response.",
-                            details: docs
-                        }
-                    });
+                    var pendind_Ids = docs[0].pending_request;
+                    for (var i = 0; i <= docs[0].pending_request.length; i++) {
+                        customer.findOne({ _id: ObjectId(docs[0].pending_request[i]) }, function (err1, item) {
+                            if (err1) {
+                                res.status(500).json({
+                                    success: false,
+                                    data: err1
+                                });
+                            } else {
+                                user_data.push(item);
+                                if (pendind_Ids.length === user_data.length) {
+                                    const request_data = {
+                                        _id: docs[0]._id,
+                                        userId: docs[0].userId,
+                                        friend: docs[0].friend,
+                                        request_send: docs[0].request_send,
+                                        pending_request: user_data
+                                    };
+                                    res.status(200).json({
+                                        success: true,
+                                        data: {
+                                            message: "User request response.",
+                                            details: request_data
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
                 } else {
                     res.status(200).json({
                         success: true,
