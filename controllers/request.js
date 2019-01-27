@@ -3,12 +3,16 @@ var express = require('express'),
 var db = require('../db');
 const requestController = {};
 const ObjectId = require('mongodb').ObjectID;
+var FCM = require('fcm-push');
+var serverKey = 'AAAA3MG1BaQ:APA91bFb8Ptoq_CQEVPPk1QEja4CZrZqYjO0J1PEmbg7Q2QlRBNkeXTkTyTD6auO_zXIgbQ9SZmP1InM68AG1dIXJyMFOP42p0UOil2bFP2feYsBNblaJRu4If-gb2EzivVyewVHmma5';
+var fcm = new FCM(serverKey);
 
 requestController.sendRequest = (req, res) => {
     const requestBody = req.body;
     if (requestBody.senderId &&
         requestBody.receiverId) {
         var Request = db.get().collection('request');
+        var customer = db.get().collection('customer');
 
         Request.find({
             userId: ObjectId(requestBody.senderId)
@@ -119,10 +123,41 @@ requestController.sendRequest = (req, res) => {
                                                             data: err11
                                                         });
                                                     } else {
-                                                        res.status(200).json({
-                                                            success: false,
-                                                            data: {
-                                                                message: "Request send."
+
+                                                        /**
+                                                 * send push notification to 
+                                                 */
+                                                        customer.findOne({ _id: ObjectId(requestBody.receiverId) }, function (err11, item2) {
+                                                            if (err10) {
+                                                                res.status(500).json({
+                                                                    success: false,
+                                                                    data: err11
+                                                                });
+                                                            } else {
+                                                                var message = {
+                                                                    to: item2.deviceId,
+                                                                    notification: {
+                                                                        title: "Request",
+                                                                        body: "Friend request send"
+                                                                    }
+                                                                };
+
+                                                                fcm.send(message, function (error, response) {
+                                                                    if (error) {
+                                                                        console.log("Fcm error is :");
+                                                                        console.log(error);
+                                                                    } else {
+                                                                        console.log("Response is : ");
+                                                                        console.log(response);
+                                                                    }
+                                                                });
+
+                                                                res.status(200).json({
+                                                                    success: false,
+                                                                    data: {
+                                                                        message: "Request send."
+                                                                    }
+                                                                });
                                                             }
                                                         });
                                                     }
@@ -213,10 +248,40 @@ requestController.sendRequest = (req, res) => {
                                                     data: err7
                                                 });
                                             } else {
-                                                res.status(200).json({
-                                                    success: false,
-                                                    data: {
-                                                        message: "Request send."
+                                                /**
+                                                 * send push notification to 
+                                                 */
+                                                customer.findOne({ _id: ObjectId(requestBody.receiverId) }, function (err10, item1) {
+                                                    if (err10) {
+                                                        res.status(500).json({
+                                                            success: false,
+                                                            data: err10
+                                                        });
+                                                    } else {
+                                                        var message = {
+                                                            to: item1.deviceId,
+                                                            notification: {
+                                                                title: "Request",
+                                                                body: "Friend request send"
+                                                            }
+                                                        };
+
+                                                        fcm.send(message, function (error, response) {
+                                                            if (error) {
+                                                                console.log("Fcm error is :");
+                                                                console.log(error);
+                                                            } else {
+                                                                console.log("Response is : ");
+                                                                console.log(response);
+                                                            }
+                                                        });
+
+                                                        res.status(200).json({
+                                                            success: false,
+                                                            data: {
+                                                                message: "Request send."
+                                                            }
+                                                        });
                                                     }
                                                 });
                                             }
@@ -315,10 +380,40 @@ requestController.acceptRequest = (req, res) => {
                                                                     }
                                                                 })
                                                             } else {
-                                                                res.status(200).json({
-                                                                    success: false,
-                                                                    data: {
-                                                                        message: "Request accept successfully."
+                                                                /**
+                                                 * send push notification to 
+                                                 */
+                                                                customer.findOne({ _id: ObjectId(requestBody.receiverId) }, function (err10, item1) {
+                                                                    if (err10) {
+                                                                        res.status(500).json({
+                                                                            success: false,
+                                                                            data: err10
+                                                                        });
+                                                                    } else {
+                                                                        var message = {
+                                                                            to: item1.deviceId,
+                                                                            notification: {
+                                                                                title: "Request",
+                                                                                body: "Friend request accepted successfully"
+                                                                            }
+                                                                        };
+
+                                                                        fcm.send(message, function (error, response) {
+                                                                            if (error) {
+                                                                                console.log("Fcm error is :");
+                                                                                console.log(error);
+                                                                            } else {
+                                                                                console.log("Response is : ");
+                                                                                console.log(response);
+                                                                            }
+                                                                        });
+
+                                                                        res.status(200).json({
+                                                                            success: false,
+                                                                            data: {
+                                                                                message: "Request accept successfully."
+                                                                            }
+                                                                        });
                                                                     }
                                                                 });
                                                             }
@@ -451,10 +546,40 @@ requestController.cancelRequest = (req, res) => {
                                                                     }
                                                                 })
                                                             } else {
-                                                                res.status(200).json({
-                                                                    success: false,
-                                                                    data: {
-                                                                        message: "Request cancel successfully."
+                                                                /**
+                                                 * send push notification to 
+                                                 */
+                                                                customer.findOne({ _id: ObjectId(requestBody.receiverId) }, function (err10, item1) {
+                                                                    if (err10) {
+                                                                        res.status(500).json({
+                                                                            success: false,
+                                                                            data: err10
+                                                                        });
+                                                                    } else {
+                                                                        var message = {
+                                                                            to: item1.deviceId,
+                                                                            notification: {
+                                                                                title: "Request",
+                                                                                body: "Friend request accepted successfully"
+                                                                            }
+                                                                        };
+
+                                                                        fcm.send(message, function (error, response) {
+                                                                            if (error) {
+                                                                                console.log("Fcm error is :");
+                                                                                console.log(error);
+                                                                            } else {
+                                                                                console.log("Response is : ");
+                                                                                console.log(response);
+                                                                            }
+                                                                        });
+
+                                                                        res.status(200).json({
+                                                                            success: false,
+                                                                            data: {
+                                                                                message: "Request cancel successfully."
+                                                                            }
+                                                                        });
                                                                     }
                                                                 });
                                                             }

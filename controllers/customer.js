@@ -43,7 +43,7 @@ function getPasswordFromHash(saltKey, userpassword) {
 
 customerController.customerSignup = (req, res) => {
     const requestBody = req.body;
-    if (requestBody.username && requestBody.email && requestBody.phone && requestBody.password) {
+    if (requestBody.username && requestBody.email && requestBody.phone && requestBody.password && requestBody.deviceId) {
         var collection = db.get().collection('customer');
         collection.find({
             email: requestBody.email

@@ -5,6 +5,10 @@ const http = require("http");
 const socketIo = require("socket.io");
 const ObjectId = require('mongodb').ObjectID;
 
+var FCM = require('fcm-push');
+var serverKey = 'AAAA3MG1BaQ:APA91bFb8Ptoq_CQEVPPk1QEja4CZrZqYjO0J1PEmbg7Q2QlRBNkeXTkTyTD6auO_zXIgbQ9SZmP1InM68AG1dIXJyMFOP42p0UOil2bFP2feYsBNblaJRu4If-gb2EzivVyewVHmma5';
+var fcm = new FCM(serverKey);
+
 const port = process.env.PORT || 7000;
 
 const app = express();
@@ -17,7 +21,7 @@ const routes = require('./routes');
 // const router = express.Router();
 
 db.connect('mongodb://test:password1@ds237932.mlab.com:37932/ionic_test', function (err) {
-    // db.connect('mongodb://127.0.0.1:27017/app_server', function (err) {
+// db.connect('mongodb://127.0.0.1:27017/app_server', function (err) {
     if (err) {
         console.log('Unable to connect to Mongo.')
         process.exit(1)
@@ -94,6 +98,26 @@ io.on('connection', function (socket) {
                             if (error) {
                                 console.log('chat not saved');
                             } else {
+                                /**
+                                    * send push notification
+                                 */
+                                var message = {
+                                    to: success[0].deviceId,
+                                    notification: {
+                                        title: "Message",
+                                        body: "Message send successfully"
+                                    }
+                                };
+
+                                fcm.send(message, function (error, response) {
+                                    if (error) {
+                                        console.log("Fcm error is :");
+                                        console.log(error);
+                                    } else {
+                                        console.log("Response is : ");
+                                        console.log(response);
+                                    }
+                                });
                                 socket.to(toSocketId).emit(`add-message-response`, data);
                             }
                         });
