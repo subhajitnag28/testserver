@@ -39,6 +39,9 @@ routes.get('/getInterest/:userId', myinterestController.getInterest);
 //update interest
 routes.post('/updateInterest', myinterestController.updateInterest);
 
+//search user on main category
+routes.post('/serachUserOnMainCategory', myinterestController.serachUserOnMainCategory);
+
 //create event
 routes.post('/createEvent', eventController.createEvent);
 

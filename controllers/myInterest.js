@@ -9,8 +9,8 @@ const ObjectId = require('mongodb').ObjectID;
 myinterestController.createInterest = (req, res) => {
     const requestBody = req.body;
     if (requestBody.mainCategory && requestBody.subCategory &&
-        requestBody.type && requestBody.hobby && requestBody.interest
-        && requestBody.personType && requestBody.favourite && requestBody.userId) {
+        requestBody.type && requestBody.hobby && requestBody.interest &&
+        requestBody.personType && requestBody.favourite && requestBody.userId) {
         var collection = db.get().collection('interest');
 
         collection.save(requestBody, function (err, success) {
@@ -93,8 +93,8 @@ myinterestController.updateInterest = (req, res) => {
             } else {
                 if (success.length > 0) {
                     collection.update({
-                        userId: requestBody.userId
-                    }, {
+                            userId: requestBody.userId
+                        }, {
                             $set: requestBody
                         }, {
                             upsert: true
@@ -130,6 +130,75 @@ myinterestController.updateInterest = (req, res) => {
         res.status(403).json({
             success: false,
             data: "user id is required."
+        });
+    }
+}
+
+myinterestController.serachUserOnMainCategory = (req, res) => {
+    const requestBody = req.body;
+    let query = {};
+    if (requestBody.categoryName) {
+        const categoryName = requestBody.categoryName;
+        var collection = db.get().collection('interest');
+        var customer = db.get().collection('customer');
+        if (categoryName) {
+            const x = [categoryName],
+                regex = x.map(function (e) {
+                    return new RegExp(e, "i");
+                });
+            query["mainCategory"] = {
+                $in: regex
+            }
+        }
+
+        collection.find(query, {})
+            .toArray(function (err, success) {
+                if (err) {
+                    res.status(500).json({
+                        success: false,
+                        data: {
+                            message: err
+                        }
+                    });
+                } else {
+                    if (success.length != 0) {
+                        for (let i = 0; i < success.length; i++) {
+                            customer.find({
+                                _id: ObjectId(success[i].userId)
+                            }).toArray(function (err1, users) {
+                                if (err1) {
+                                    res.status(500).json({
+                                        success: false,
+                                        data: {
+                                            message: err1
+                                        }
+                                    });
+                                } else {
+                                    res.status(200).json({
+                                        success: true,
+                                        data: {
+                                            message: "User details on categort",
+                                            users: users
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    } else {
+                        res.status(404).json({
+                            success: false,
+                            data: {
+                                message: "Category does not match"
+                            }
+                        });
+                    }
+                }
+            });
+
+    } else {
+        res.status(403).json({
+            success: false,
+            data: "Category name is required"
         });
     }
 }
