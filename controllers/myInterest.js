@@ -134,7 +134,7 @@ myinterestController.updateInterest = (req, res) => {
     }
 }
 
-myinterestController.serachUserOnMainCategory = (req, res) => {
+myinterestController.searchUserOnMainCategory = (req, res) => {
     const requestBody = req.body;
     let query = {};
     if (requestBody.categoryName) {
