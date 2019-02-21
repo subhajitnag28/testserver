@@ -177,7 +177,7 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
                                             res.status(200).json({
                                                 success: true,
                                                 data: {
-                                                    message: "User details on categort",
+                                                    message: "User details on category",
                                                     users: details
                                                 }
                                             });
