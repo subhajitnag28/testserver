@@ -136,11 +136,11 @@ myinterestController.updateInterest = (req, res) => {
 
 myinterestController.searchUserOnMainCategory = (req, res) => {
     const requestBody = req.body;
-    let query = {};
     if (requestBody.categoryName) {
         const categoryName = requestBody.categoryName;
         var collection = db.get().collection('interest');
         var customer = db.get().collection('customer');
+        let query = {};
         if (categoryName) {
             const x = [categoryName],
                 regex = x.map(function (e) {
@@ -150,7 +150,7 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
                 $in: regex
             }
 
-            collection.find(query, {})
+            collection.find(query)
                 .toArray(function (err, success) {
                     if (err) {
                         res.status(500).json({
@@ -164,7 +164,7 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
                             for (let i = 0; i < success.length; i++) {
                                 customer.find({
                                     _id: ObjectId(success[i].userId)
-                                }).toArray(function (err1, users) {
+                                }).toArray(function (err1, details) {
                                     if (err1) {
                                         res.status(500).json({
                                             success: false,
@@ -173,13 +173,22 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
                                             }
                                         });
                                     } else {
-                                        res.status(200).json({
-                                            success: true,
-                                            data: {
-                                                message: "User details on categort",
-                                                users: users
-                                            }
-                                        });
+                                        if (details.length != 0) {
+                                            res.status(200).json({
+                                                success: true,
+                                                data: {
+                                                    message: "User details on categort",
+                                                    users: details
+                                                }
+                                            });
+                                        } else {
+                                            res.status(404).json({
+                                                success: false,
+                                                data: {
+                                                    message: "Users not found"
+                                                }
+                                            });
+                                        }
                                     }
                                 });
                             }
