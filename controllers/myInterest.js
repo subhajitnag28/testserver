@@ -141,6 +141,7 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
         var collection = db.get().collection('interest');
         var customer = db.get().collection('customer');
         let query = {};
+        let userList = [];
         if (categoryName) {
             const x = [categoryName],
                 regex = x.map(function (e) {
@@ -150,7 +151,7 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
                 $in: regex
             }
 
-            collection.find(query,{})
+            collection.find(query, {})
                 .toArray(function (err, success) {
                     if (err) {
                         res.status(500).json({
@@ -161,7 +162,7 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
                         });
                     } else {
                         if (success.length != 0) {
-                            for (let i = 0; i <= success.length; i++) {
+                            for (let i in success) {
                                 customer.find({
                                     _id: ObjectId(success[i].userId)
                                 }).toArray(function (err1, details) {
@@ -174,13 +175,16 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
                                         });
                                     } else {
                                         if (details.length != 0) {
-                                            res.status(200).json({
-                                                success: true,
-                                                data: {
-                                                    message: "User details on category",
-                                                    users: details
-                                                }
-                                            });
+                                            userList.push(details[0]);
+                                            if (success.length == userList.length) {
+                                                res.status(200).json({
+                                                    success: true,
+                                                    data: {
+                                                        message: "User details on category",
+                                                        users: userList
+                                                    }
+                                                });
+                                            }
                                         } else {
                                             res.status(404).json({
                                                 success: false,
