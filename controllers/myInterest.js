@@ -150,7 +150,7 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
                 $in: regex
             }
 
-            collection.find(query)
+            collection.find(query,{})
                 .toArray(function (err, success) {
                     if (err) {
                         res.status(500).json({
@@ -161,7 +161,7 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
                         });
                     } else {
                         if (success.length != 0) {
-                            for (let i = 0; i < success.length; i++) {
+                            for (let i = 0; i <= success.length; i++) {
                                 customer.find({
                                     _id: ObjectId(success[i].userId)
                                 }).toArray(function (err1, details) {
