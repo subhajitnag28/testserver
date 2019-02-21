@@ -93,8 +93,8 @@ myinterestController.updateInterest = (req, res) => {
             } else {
                 if (success.length > 0) {
                     collection.update({
-                            userId: requestBody.userId
-                        }, {
+                        userId: requestBody.userId
+                    }, {
                             $set: requestBody
                         }, {
                             upsert: true
@@ -149,52 +149,51 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
             query["mainCategory"] = {
                 $in: regex
             }
-        }
 
-        collection.find(query, {})
-            .toArray(function (err, success) {
-                if (err) {
-                    res.status(500).json({
-                        success: false,
-                        data: {
-                            message: err
-                        }
-                    });
-                } else {
-                    if (success.length != 0) {
-                        for (let i = 0; i < success.length; i++) {
-                            customer.find({
-                                _id: ObjectId(success[i].userId)
-                            }).toArray(function (err1, users) {
-                                if (err1) {
-                                    res.status(500).json({
-                                        success: false,
-                                        data: {
-                                            message: err1
-                                        }
-                                    });
-                                } else {
-                                    res.status(200).json({
-                                        success: true,
-                                        data: {
-                                            message: "User details on categort",
-                                            users: users
-                                        }
-                                    });
+            collection.find(query, {})
+                .toArray(function (err, success) {
+                    if (err) {
+                        res.status(500).json({
+                            success: false,
+                            data: {
+                                message: err
+                            }
+                        });
+                    } else {
+                        if (success.length != 0) {
+                            for (let i = 0; i < success.length; i++) {
+                                customer.find({
+                                    _id: ObjectId(success[i].userId)
+                                }).toArray(function (err1, users) {
+                                    if (err1) {
+                                        res.status(500).json({
+                                            success: false,
+                                            data: {
+                                                message: err1
+                                            }
+                                        });
+                                    } else {
+                                        res.status(200).json({
+                                            success: true,
+                                            data: {
+                                                message: "User details on categort",
+                                                users: users
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        } else {
+                            res.status(404).json({
+                                success: false,
+                                data: {
+                                    message: "Category does not match"
                                 }
                             });
                         }
-                    } else {
-                        res.status(404).json({
-                            success: false,
-                            data: {
-                                message: "Category does not match"
-                            }
-                        });
                     }
-                }
-            });
-
+                });
+        }
     } else {
         res.status(403).json({
             success: false,
