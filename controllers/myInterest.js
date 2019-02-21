@@ -136,12 +136,14 @@ myinterestController.updateInterest = (req, res) => {
 
 myinterestController.searchUserOnMainCategory = (req, res) => {
     const requestBody = req.body;
-    if (requestBody.categoryName) {
+    if (requestBody.categoryName && requestBody.userId) {
         const categoryName = requestBody.categoryName;
+        const userId = requestBody.userId;
         var collection = db.get().collection('interest');
         var customer = db.get().collection('customer');
         let query = {};
         let userList = [];
+        let userIds = [];
         if (categoryName) {
             const x = [categoryName],
                 regex = x.map(function (e) {
@@ -163,38 +165,41 @@ myinterestController.searchUserOnMainCategory = (req, res) => {
                     } else {
                         if (success.length != 0) {
                             for (let i in success) {
-                                customer.find({
-                                    _id: ObjectId(success[i].userId)
-                                }).toArray(function (err1, details) {
-                                    if (err1) {
-                                        res.status(500).json({
-                                            success: false,
-                                            data: {
-                                                message: err1
-                                            }
-                                        });
-                                    } else {
-                                        if (details.length != 0) {
-                                            userList.push(details[0]);
-                                            if (success.length == userList.length) {
-                                                res.status(200).json({
-                                                    success: true,
+                                if (success[i].userId != userId) {
+                                    userIds.push(success[i].userId);
+                                    customer.find({
+                                        _id: ObjectId(success[i].userId)
+                                    }).toArray(function (err1, details) {
+                                        if (err1) {
+                                            res.status(500).json({
+                                                success: false,
+                                                data: {
+                                                    message: err1
+                                                }
+                                            });
+                                        } else {
+                                            if (details.length != 0) {
+                                                userList.push(details[0]);
+                                                if (userIds.length == userList.length) {
+                                                    res.status(200).json({
+                                                        success: true,
+                                                        data: {
+                                                            message: "User details on category",
+                                                            users: userList
+                                                        }
+                                                    });
+                                                }
+                                            } else {
+                                                res.status(404).json({
+                                                    success: false,
                                                     data: {
-                                                        message: "User details on category",
-                                                        users: userList
+                                                        message: "Users not found"
                                                     }
                                                 });
                                             }
-                                        } else {
-                                            res.status(404).json({
-                                                success: false,
-                                                data: {
-                                                    message: "Users not found"
-                                                }
-                                            });
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
                         } else {
                             res.status(404).json({
